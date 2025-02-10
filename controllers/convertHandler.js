@@ -1,42 +1,49 @@
 function ConvertHandler() {
 
   this.getNum = function (input) {
-    let result;
-    const regex = /^[^a-zA-Z]+/;
-    const match = input.match(regex);
+    // j34ykg
+    const splitIndex = input.search(/[a-zA-Z]/);
+    let numberPart = input.slice(0, splitIndex);
 
-    if (!match) {
+    if (!numberPart) {
       return 1; // Default to 1 if no numerical input is provided
     }
 
-    result = match[0];
-
-    if (result.includes('/')) {
-      const nums = result.split('/');
+    if (numberPart.includes('/')) {
+      const nums = numberPart.split('/');
       if (nums.length != 2) {
         throw new Error('Invalid number');
       }
-      result = parseFloat(nums[0]) / parseFloat(nums[1]);
+      numberPart = parseFloat(nums[0]) / parseFloat(nums[1]);
     } else {
-      result = parseFloat(result);
+      numberPart = parseFloat(numberPart);
     }
 
-    if (isNaN(result)) {
+    if (isNaN(numberPart)) {
       throw new Error('Invalid number');
     }
 
-    return result;
+    return numberPart;
   };
 
   this.getUnit = function (input) {
-    const validUnits = ['gal', 'L', 'mi', 'km', 'lbs', 'kg'];
-    const unit = input.match(/[a-zA-Z]+/)[0];
+    const splitIndex = input.search(/[a-zA-Z]/);
+    // const numberPart = input.slice(0, splitIndex);
+    let unitPart = input.slice(splitIndex);
 
-    if (!validUnits.includes(unit)) {
+    if (!unitPart) {
       throw new Error('Invalid unit');
     }
 
-    return unit;
+    if (unitPart.toLowerCase() === 'l') {
+      unitPart = 'L';
+    }
+
+    if (!['gal', 'L', 'mi', 'km', 'lbs', 'kg'].includes(unitPart)) {
+      throw new Error('Invalid unit');
+    }
+
+    return unitPart;
   };
 
   this.getReturnUnit = function (initUnit) {
@@ -94,6 +101,7 @@ function ConvertHandler() {
         throw new Error('Invalid unit');
     }
 
+    result = Math.round(result * 1e5) / 1e5;
     return result;
   };
 
